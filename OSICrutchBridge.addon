@@ -12,9 +12,11 @@
 ## APIVersion: 101048
 
 ; TODO
-## PCDependsOn: CrutchAlerts>=20700
+## DependsOn: CrutchAlerts>=20800
+; Soft dependencies just so we load after them, not actually used
+## OptionalDependsOn: OdySupportIcons pChat rChat
 
 ## SavedVariables: OSICrutchBridgeSavedVariables
 
 OSICrutchBridge.lua
-Bridge.lua
+BridgeFunctions.lua

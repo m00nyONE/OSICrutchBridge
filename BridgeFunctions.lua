@@ -4,12 +4,22 @@ local function StartsWith(str, prefix)
     return string.sub(str, 1, #prefix) == prefix
 end
 
+-- TODO: opacity setting
+local textures = {
+    ["odysupporticons/icons/green_arrow.dds"] = {path = "CrutchAlerts/assets/shape/chevron.dds", color = {0, 1, 0, 0.7}}
+}
+
 local function ConvertTexture(texture)
     if (StartsWith(texture, "/")) then
         texture = texture:sub(2) -- Remove first /
     end
 
     if (StartsWith(texture:lower(), "odysupporticons")) then
+        local replacement = textures[texture:lower()]
+        if (replacement) then
+            return replacement.path, replacement.color
+        end
+        -- TODO: map some textures
         CrutchAlerts.dbgOther("|cFFFF00OSI-Crutch Bridge: no texture replacement available for " .. texture .. "; using poop instead.")
         return "CrutchAlerts/assets/poop.dds"
     end
@@ -18,7 +28,7 @@ end
 
 ---------------------------------------------------------------------
 function OCB.OSI.GetIconSize()
-    return 128 -- TODO: setting?
+    return 128 -- TODO: setting? or just inherit from crutch?
 end
 
 ---------------------------------------------------------------------
@@ -27,8 +37,16 @@ function OCB.OSI.CreatePositionIcon(x, y, z, texture, size, color, offset, callb
         CrutchAlerts.dbgOther("|cFFFF00OSI-Crutch Bridge doesn't support callback in CreatePositionIcon! Continuing...|r")
     end
 
-    texture = ConvertTexture(texture)
-    color = color or CrutchAlerts.Constants.WHITE
+    local replacementColor
+    texture, replacementColor = ConvertTexture(texture)
+    if (not color) then
+        if (replacementColor) then
+            color = replacementColor
+        else
+            color = CrutchAlerts.Constants.WHITE
+        end
+    end
+
     offset = offset or 0
 
     local key = CrutchAlerts.Drawing.CreateWorldTexture(
@@ -74,8 +92,15 @@ function OCB.OSI.SetMechanicIconForUnit(displayName, texture, size, color, offse
         CrutchAlerts.dbgOther("|cFFFF00OSI-Crutch Bridge doesn't support callback in CreatePositionIcon! Continuing...|r")
     end
 
-    texture = ConvertTexture(texture)
-    color = color or CrutchAlerts.Constants.WHITE
+    local replacementColor
+    texture, replacementColor = ConvertTexture(texture)
+    if (not color) then
+        if (replacementColor) then
+            color = replacementColor
+        else
+            color = CrutchAlerts.Constants.WHITE
+        end
+    end
 
     local unitTag = GetUnitTagForName(displayName)
     if (unitTag) then
